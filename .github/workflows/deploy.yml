@@ -1,5 +1,8 @@
 name: 'Oracle Cloud Free Tier k3s'
 
+env:
+  TFPath: terraform/
+
 on:
   push:
     branches:
