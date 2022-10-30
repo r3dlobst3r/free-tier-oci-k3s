@@ -40,8 +40,8 @@ resource "oci_core_subnet" "servernode_subnet" {
   compartment_id    = var.compartment_ocid
   vcn_id            = module.vcn.vcn_id
   route_table_id    = oci_core_route_table.servernode_routetable.id
-  security_list_ids = ["${oci_core_virtual_network.vcn.default_security_list_id}", "${oci_core_security_list.servernode_security_list.id}"]
-  dhcp_options_id   = oci_core_virtual_network.vcn.default_dhcp_options_id
+  security_list_ids = ["${module.vcn.default_security_list_id}", "${oci_core_security_list.servernode_security_list.id}"]
+  dhcp_options_id   = module.vcn.default_dhcp_options_id
   dns_label         = "${var.PREFIX}servernode"
 }
 
@@ -123,8 +123,8 @@ resource "oci_core_subnet" "agentnode_subnet" {
   compartment_id    = var.compartment_ocid
   vcn_id            = module.vcn.vcn_id
   route_table_id    = oci_core_route_table.agentnode_routetable.id
-  security_list_ids = ["${oci_core_virtual_network.vcn.default_security_list_id}", "${oci_core_security_list.agentnode_security_list.id}"]
-  dhcp_options_id   = oci_core_virtual_network.vcn.default_dhcp_options_id
+  security_list_ids = ["${module.vcn.default_security_list_id}", "${oci_core_security_list.agentnode_security_list.id}"]
+  dhcp_options_id   = module.vcn.default_dhcp_options_id
   dns_label         = "${var.PREFIX}agentnode"
   /* prohibit_public_ip_on_vnic = true */
 }
@@ -163,8 +163,8 @@ resource "oci_core_subnet" "backend_subnet" {
   display_name      = "${var.PREFIX}-backend"
   compartment_id    = var.compartment_ocid
   vcn_id            = module.vcn.vcn_id
-  security_list_ids = ["${oci_core_virtual_network.vcn.default_security_list_id}", "${oci_core_security_list.servernode_security_list.id}"]
-  dhcp_options_id   = oci_core_virtual_network.vcn.default_dhcp_options_id
+  security_list_ids = ["${module.vcn.default_security_list_id}", "${oci_core_security_list.servernode_security_list.id}"]
+  dhcp_options_id   = module.vcn.default_dhcp_options_id
   dns_label         = "${var.PREFIX}backend"
 }
 
