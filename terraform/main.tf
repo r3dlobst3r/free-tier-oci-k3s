@@ -12,7 +12,7 @@ module "vcn" {
   source  = "oracle-terraform-modules/vcn/oci"
   version = ">3.5.0"
 
-  compartment_id = var.compartment_id
+  compartment_id = var.compartment_ocid
   region         = var.region
 
   internet_gateway_route_rules = null
@@ -37,7 +37,7 @@ module "vcn" {
 resource "oci_core_subnet" "servernode_subnet" {
   cidr_block        = var.subnet["1"]
   display_name      = "${var.PREFIX}-servernode"
-  compartment_id    = var.compartment_id
+  compartment_id    = var.compartment_ocid
   vcn_id            = module.vcn.vcn_id
   route_table_id    = oci_core_route_table.servernode_routetable.id
   security_list_ids = ["${oci_core_virtual_network.vcn.default_security_list_id}", "${oci_core_security_list.servernode_security_list.id}"]
@@ -46,7 +46,7 @@ resource "oci_core_subnet" "servernode_subnet" {
 }
 
 resource "oci_core_route_table" "servernode_routetable" {
-  compartment_id = var.compartment_id
+  compartment_id = var.compartment_ocid
   vcn_id         = module.vcn.vcn_id
   display_name   = "${var.PREFIX}-servernode-rt"
 
@@ -57,7 +57,7 @@ resource "oci_core_route_table" "servernode_routetable" {
 }
 
 resource "oci_core_security_list" "servernode_security_list" {
-  compartment_id = var.compartment_id
+  compartment_id = var.compartment_ocid
   vcn_id         = module.vcn.vcn_id
   display_name   = "${var.PREFIX}-servernode-security-list"
 
@@ -120,7 +120,7 @@ resource "oci_core_security_list" "servernode_security_list" {
 resource "oci_core_subnet" "agentnode_subnet" {
   cidr_block        = var.subnet["3"]
   display_name      = "${var.PREFIX}-agentnode"
-  compartment_id    = var.compartment_id
+  compartment_id    = var.compartment_ocid
   vcn_id            = module.vcn.vcn_id
   route_table_id    = oci_core_route_table.agentnode_routetable.id
   security_list_ids = ["${oci_core_virtual_network.vcn.default_security_list_id}", "${oci_core_security_list.agentnode_security_list.id}"]
@@ -130,7 +130,7 @@ resource "oci_core_subnet" "agentnode_subnet" {
 }
 
 resource "oci_core_route_table" "agentnode_routetable" {
-  compartment_id = var.compartment_id
+  compartment_id = var.compartment_ocid
   vcn_id         = module.vcn.vcn_id
   display_name   = "${var.PREFIX}-agentnode-rt"
 
@@ -141,7 +141,7 @@ resource "oci_core_route_table" "agentnode_routetable" {
 }
 
 resource "oci_core_security_list" "agentnode_security_list" {
-  compartment_id = var.compartment_id
+  compartment_id = var.compartment_ocid
   vcn_id         = module.vcn.vcn_id
   display_name   = "${var.PREFIX}-internal-security-list"
 
@@ -161,7 +161,7 @@ resource "oci_core_security_list" "agentnode_security_list" {
 resource "oci_core_subnet" "backend_subnet" {
   cidr_block        = var.subnet["2"]
   display_name      = "${var.PREFIX}-backend"
-  compartment_id    = var.compartment_id
+  compartment_id    = var.compartment_ocid
   vcn_id            = module.vcn.vcn_id
   security_list_ids = ["${oci_core_virtual_network.vcn.default_security_list_id}", "${oci_core_security_list.servernode_security_list.id}"]
   dhcp_options_id   = oci_core_virtual_network.vcn.default_dhcp_options_id
@@ -176,7 +176,7 @@ resource "oci_core_instance" "k3s_servernode" {
   depends_on = [module.vcn]
 
   availability_domain = lookup(data.oci_identity_availability_domains.ads.availability_domains[var.availability_domain - 1], "name")
-  compartment_id      = var.compartment_id
+  compartment_id      = var.compartment_ocid
   display_name        = "${var.PREFIX}-k3s-servernode"
   shape               = var.instance_shape
   shape_config {
@@ -220,7 +220,7 @@ resource "oci_core_instance" "k3s_agentnodes" {
   count      = var.number_of_agentnodes
 
   availability_domain = lookup(data.oci_identity_availability_domains.ads.availability_domains[0], "name")
-  compartment_id      = var.compartment_id
+  compartment_id      = var.compartment_ocid
   display_name        = format("%s-k3s-agentnode-%03d", var.PREFIX, count.index + 1)
   shape               = var.instance_shape
   shape_config {
