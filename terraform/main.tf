@@ -202,7 +202,7 @@ resource "oci_core_instance" "k3s_servernode" {
   // Commnet out the following if you use the feature.
   metadata = {
     user_data           = base64encode(file("${path.module}/customdata.tftpl"))
-    user_data           = base64encode(([templatefile("${path.module}/customdata-k3s-server.tftpl", { server_ip = local.servernode_ipaddresses["2"], k3s_token = var.K3S_TOKEN })])[0])
+    user_data           = base64encode(([templatefile("${path.module}/terraform/customdata-k3s-server.tftpl", { server_ip = local.servernode_ipaddresses["2"], k3s_token = var.K3S_TOKEN })])[0])
     ssh_authorized_keys = file("~/.ssh/id_rsa.pub")
   }
 
@@ -244,7 +244,7 @@ resource "oci_core_instance" "k3s_agentnodes" {
   // Required for bootstrap
   // Commnet out the following if you use the feature.
   metadata = {
-    user_data           = base64encode(([templatefile("${path.module}/customdata-k3s-agent.tftpl", { server_ip = local.servernode_ipaddresses["2"], k3s_token = var.K3S_TOKEN })])[0])
+    user_data           = base64encode(([templatefile("${path.module}/terraform/customdata-k3s-agent.tftpl", { server_ip = local.servernode_ipaddresses["2"], k3s_token = var.K3S_TOKEN })])[0])
     ssh_authorized_keys = file("~/.ssh/id_rsa.pub")
   }
 
