@@ -27,7 +27,7 @@ module "vcn" {
   create_nat_gateway      = false
   create_service_gateway  = true
 
-  internet_gateway_display_name = "${var.PREFIX}-igw" 
+  internet_gateway_display_name = "${var.PREFIX}-igw"
 }
 
 ##############################################################################################################
@@ -216,8 +216,8 @@ resource "oci_core_instance" "k3s_servernode" {
 ##############################################################################################################
 // create oci instance for active
 resource "oci_core_instance" "k3s_agentnodes" {
-  depends_on          = [oci_core_instance.k3s_servernode]
-  count               = var.number_of_agentnodes
+  depends_on = [oci_core_instance.k3s_servernode]
+  count      = var.number_of_agentnodes
 
   availability_domain = lookup(data.oci_identity_availability_domains.ads.availability_domains[0], "name")
   compartment_id      = var.compartment_id
