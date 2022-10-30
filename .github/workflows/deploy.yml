@@ -90,14 +90,11 @@ jobs:
       run: terraform show -json plan.tfplan
       working-directory: ${{ env.TFPath }}
 
-    - name: "Save Plan JSON"
-      run: echo '${{ steps.show.outputs.stdout }}' > plan.json # Do not change
-
     - name: Terraform Plan Status
       if: steps.plan.outcome == 'failure'
       run: exit 1
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve -input=false plan.json
+      run: terraform apply -auto-approve -input=false plan.tfplan
       working-directory: ${{ env.TFPath }}
