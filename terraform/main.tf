@@ -201,7 +201,7 @@ resource "oci_core_instance" "k3s_servernode" {
   // Required for bootstrap
   // Commnet out the following if you use the feature.
   metadata = {
-    user_data           = base64encode(([templatefile("${path.module}/terraform/customdata-k3s-server.tftpl", { server_ip = local.servernode_ipaddresses["2"], k3s_token = var.K3S_TOKEN })])[0])
+    user_data           = base64encode(([templatefile("${path.module}/terraform/customdata-k3s-server.tftpl", { k3s_token = var.K3S_TOKEN })])[0])
     ssh_authorized_keys = file("id_ed2519.pub")
   }
 
