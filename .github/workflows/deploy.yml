@@ -9,7 +9,7 @@ on:
 jobs:
   deploy:
     name: 'Terraform Deploy'
-    runs-on: [self-hosted, linux, ARM64]
+    runs-on: [self-hosted, linux, X64]
     env:
       TF_VAR_PREFIX: "jvh"
       TF_VAR_region: ${{ secrets.region }}
