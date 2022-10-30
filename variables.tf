@@ -22,11 +22,11 @@ variable "K3S_TOKEN" {
 ##############################################################################################################
 
 variable "tenancy_ocid" {}
-variable "compartment_id" {}
+variable "compartment_ocid" {}
 variable "user_ocid" {
   default = ""
 }
-variable "private_key_path" {
+variable "private_key" {
   default = ""
 }
 variable "fingerprint" {

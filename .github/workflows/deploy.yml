@@ -1,0 +1,86 @@
+name: 'Oracle Cloud Free Tier k3s'
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  deploy:
+    name: 'Terraform Deploy'
+    runs-on: [self-hosted, linux, ARM64]
+    env:
+      TF_VAR_PREFIX: "jvh"
+      TF_VAR_region: ${{ secrets.region }}
+      TF_VAR_K3S_TOKEN: ${{ secrets.K3S_TOKEN }}
+      TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+      TF_VAR_user_ocid: ${{ secrets.USER_OCID }}
+      TF_VAR_tenancy_ocid: ${{ secrets.TENANCY_OCID }}
+      TF_VAR_compartment_ocid: ${{ secrets.COMPARTMENT_OCID }}
+      TF_VAR_fingerprint: ${{ secrets.FINGERPRINT }}
+      TF_VAR_private_key: ${{ secrets.private_key }}
+
+    steps:
+    - name: "Checkout"
+      uses: actions/checkout@v3
+
+    - name: "Setup Terraform"
+      uses: hashicorp/setup-terraform@v1
+
+    - name: "Terraform Format"
+      id: format
+      run: terraform fmt -check -diff
+      working-directory: ${{ env.TFPath }}
+
+    - name: "Terraform Init"
+      id: init
+      run: terraform init
+      working-directory: ${{ env.TFPath }}
+
+    - name: "Terraform Validate"
+      id: validate
+      run: terraform validate
+      working-directory: ${{ env.TFPath }}
+
+    - name: "Terraform Plan"
+      id: plan
+      run: terraform plan -out plan.tfplan
+      working-directory: ${{ env.TFPath }}
+
+    - uses: actions/github-script@v6
+      if: github.event_name == 'pull_request'
+      env:
+        PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+          #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+          #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+          <details><summary>Show Plan</summary>
+          \`\`\`\n
+          ${process.env.PLAN}
+          \`\`\`
+          </details>
+          *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
+
+    - name: "Terraform Show"
+      id: show
+      run: terraform show -json plan.tfplan
+      working-directory: ${{ env.TFPath }}
+
+    - name: "Save Plan JSON"
+      run: echo '${{ steps.show.outputs.stdout }}' > plan.json # Do not change
+
+    - name: Terraform Plan Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
+
