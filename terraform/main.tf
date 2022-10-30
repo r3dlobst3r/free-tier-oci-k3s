@@ -25,7 +25,7 @@ module "vcn" {
 
   create_internet_gateway = true
   create_nat_gateway      = false
-  create_service_gateway  = true
+  create_service_gateway  = false
 
   internet_gateway_display_name = "${var.PREFIX}-igw"
 }
