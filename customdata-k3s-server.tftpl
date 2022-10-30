@@ -1,0 +1,14 @@
+#cloud-config
+package_upgrade: true
+packages:
+  - netcat
+  - vim
+  - iputils-ping
+  - tcpdump
+
+runcmd:
+  - apt purge -y nfs-common rpcbind 
+  - iptables -F
+  - netfilter-persistent save
+  - curl -sfL https://get.k3s.io | K3S_TOKEN=${k3s_token} sh -s - server
+     
