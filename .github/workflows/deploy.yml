@@ -52,6 +52,13 @@ jobs:
       run: terraform init
       working-directory: ${{ env.TFPath }}
 
+    - name: Test
+      run: |
+        ls id_ed2519.pub
+        ls -la
+        ls -la terraform
+      shell: bash
+
     - name: "Terraform Validate"
       id: validate
       run: terraform validate
